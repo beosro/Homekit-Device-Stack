@@ -8,6 +8,7 @@ const config = require(process.cwd() + "/config.json");
 const bodyParser = require('body-parser')
 const Accessory = require('./accessory');
 const util = require('./util');
+const mqtt = require('mqtt')
 
 const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetup)
 {
@@ -18,6 +19,33 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
     const _IdentifyEvent = IdentifyEvent
     const _Bridge = Bridge;
     const _RouteSetup = RouteSetup
+
+    // MQTT
+    if(config.enableIncomingMQTT == 'true')
+    {
+        const MQTTC = mqtt.connect(config.MQTTBroker)
+        MQTTC.on('connect',function()
+        {
+            MQTTC.subscribe(config.MQTTTopic,function(err)
+            {
+                if(!err)
+                {
+                    MQTTC.on('message',function(topic,message)
+                    {
+                        const sPL = message.toString();
+                        const PL = JSON.parse(sPL);
+                        const TargetAccessory = topic.split('/')[1];
+
+                        const Ac = _Accessories[TargetAccessory]
+                        Ac.setCharacteristics(PL)
+
+
+                    })
+                }
+            })
+        })
+    }
+    
 
 
     // Express

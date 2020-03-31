@@ -227,6 +227,9 @@ const Reset = function ()
         "loginPassword": "21232f297a57a5a743894a0e4a801fc3",
         "wsCommPort": 7990,
         "webInterfacePort": 7989,
+        "enableIncomingMQTT": "false",
+        "MQTTBroker": "mqtt://test.mosquitto.org",
+        "MQTTTopic": "homekit-device-stack/+",
         "bridgeConfig": {
             "pincode": "",
             "username": "",

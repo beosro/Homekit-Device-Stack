@@ -85,6 +85,10 @@ The body in your HTTP PUT command, should be nothing more than a JSON object rep
   "OutletInUse": true
 }
 ```
+HomeKit Device Stack also supports incoming MQTT messages for altering device states.  
+The format of the message is the same as above. the topic of the message should be : homekit-device-stack/accessoryID.  
+
+You can change the root topic name in the UI. 
 
 ## Does It Run On My Microwave?
 Not yet!
@@ -112,14 +116,16 @@ HomeKit Device Stack is based on the awesome [HAP-NodeJS](https://github.com/Kha
 library, without it, projects like this one are not possible.
 
 ## Version History
-  - 1.0.0  
-    Initial Release  
+  - 1.1.0  
+    Ability to manipulate devices via MQTT
   - 1.0.1  
     Fixed typo in read me
+  - 1.0.0  
+    Initial Release  
+
 
 ## To Do
   - Create a better UI for managing Routes
   - Continue to add more accessory types
-  - Look into more ways to manipulate devices other than just HTTP (MQTT, UDP etc)
 
 
