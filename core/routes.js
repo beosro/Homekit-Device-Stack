@@ -35,7 +35,7 @@ const HTTP = function (route, payload)
   }
 
   const req = http.request(options, (res) => { });
-  req.on('error', (err) => { })
+  req.on('error', (err) =>{})
   req.write(Data);
   req.end()
 }
@@ -94,6 +94,12 @@ const MQTT = function(route, payload)
    
    const MQTTC = mqtt.connect(route.broker,route.MQTTOptions)
 
+   MQTTC.on('error',function(err)
+   {
+       console.log(" Could not connect to MQTT Broker");
+       process.exit(0);
+   })
+
    MQTTC.on('connect',function()
    {
       MQTTC.publish(route.topic, JSON.stringify(Copy),null,function()
@@ -123,7 +129,10 @@ const FILE = function (route, payload)
   const Path = path.join(route.directory, DT + '_' + payload.accessory.accessoryID + ".json")
   fs.writeFile(Path, JSON.stringify(Copy), 'utf8', function (err)
   {
-    if (err) {
+    if (err){
+
+      console.log(" Could not write output to file.");
+      process.exit(0);
     
     }
 
