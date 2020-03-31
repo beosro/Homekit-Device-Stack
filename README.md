@@ -86,7 +86,7 @@ The body in your HTTP PUT command, should be nothing more than a JSON object rep
 }
 ```
 HomeKit Device Stack also supports incoming MQTT messages for altering device states.  
-The format of the message is the same as above. the topic of the message should be : homekit-device-stack/accessoryID.  
+The format of the message is the same as above. the topic of the message should be : **homekit-device-stack/accessoryID**.  
 
 You can change the root topic name in the UI. 
 
