@@ -82,7 +82,7 @@ const MQTT = function(route, payload)
   delete Copy.accessory.serialNumber;
   Copy["route_type"] = "MQTT"
 
-   const MQTTC = mqtt.connect(route.broker)
+   const MQTTC = mqtt.connect(route.broker,route.MQTTAuth)
 
    MQTTC.on('connect',function()
    {

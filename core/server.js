@@ -23,9 +23,8 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
     // MQTT
     if(config.hasOwnProperty("enableIncomingMQTT") && config.enableIncomingMQTT == 'true')
     {
-        const Ops = {"username":config.MQTTAuth.username,"password":config.MQTTAuth.password};
         
-        const MQTTC = mqtt.connect(config.MQTTBroker,Ops)
+        const MQTTC = mqtt.connect(config.MQTTBroker,config.MQTTAuth)
         
         MQTTC.on('connect',function()
         {

@@ -257,7 +257,11 @@ const Reset = function ()
             "MQTTBroker": {
                 "type": "MQTT",
                 "broker": "mqtt://test.mosquitto.org",
-                "topic": "homekitdevicestack"
+                "topic": "homekitdevicestack",
+                "MQTTAuth": {
+                    "username":"",
+                    "password":""
+                }
             }
         },
         "accessories": []
