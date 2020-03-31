@@ -108,7 +108,7 @@ Within the directory that HomeKit Device Stack is installed.
 If creating an auto start script - ensure the script is set to run under the installed directory
 
 ## Command line arguments
-**reset** - Completely Resets HomeKit Device Stack (inits a default configuration)
+**reset** - Completely Resets HomeKit Device Stack (inits a default configuration)  
 **passwd** mypassword - set the admin password
 
 ## Credits
