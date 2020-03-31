@@ -35,6 +35,12 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
         
         console.log(" Starting MQTT Client")
         const MQTTC = mqtt.connect(config.MQTTBroker,config.MQTTOptions)
+
+        MQTTC.on('error',function(err)
+        {
+            console.log(" Could not connect to MQTT Broker");
+            process.exit(0);
+        })
         
         MQTTC.on('connect',function()
         {
@@ -54,6 +60,11 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
 
                     })
                 }
+                else
+                {
+                    console.log(" Could not subscribe to Topic");
+                    process.exit(0);
+                }
             })
         })
     }
@@ -69,7 +80,15 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
     app.get('/:pwd/accessories/:id', _processAccessoryGet);
     app.put('/:pwd/accessories/:id', _processAccessorySet);
     app.get('/', _sendIndex);
-    app.listen(config.webInterfacePort)
+    try{
+        app.listen(config.webInterfacePort)
+    }
+    catch(err)
+    {
+        console.log(" Could not start Web Server");
+        process.exit(0);
+    }
+   
 
     // Send Index Page (Starts the WS connection in doing so)
     function _sendIndex(req, res)

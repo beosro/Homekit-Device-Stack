@@ -5,6 +5,7 @@ const fs = require('fs');
 const util = require('./core/util');
 const routes = require('./core/routes');
 const config = require(process.cwd() + "/config.json");
+const ip = require("ip");
 
 console.log('\033[2J');
 
@@ -129,7 +130,7 @@ if (fs.existsSync(BridgeFileName))
 }
 
 // All done.
-const Address = chalk.keyword('green')("http://127.0.0.1:" + config.webInterfacePort+"/")
+const Address = chalk.keyword('red')("http://"+ ip.address()+":" + config.webInterfacePort+"/")
 
 console.log(" "+chalk.black.bgWhite("┌─────────────────────────────────────────────────────────────────────────┐"))
 console.log(" " + chalk.black.bgWhite("|    Goto "+Address+" to start managing your installation.     |"))

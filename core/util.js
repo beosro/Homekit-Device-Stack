@@ -97,7 +97,9 @@ const saveConfig = function(config)
     {
         if (err)
         {
-            
+            console.log(" Could not right to the config file.");
+            process.exit(0);
+
         }
         
     })
@@ -107,22 +109,31 @@ const saveConfig = function(config)
 
 const _deleteFolderRecursive = function (path)
 {
-    if (fs.existsSync(path))
+    try
     {
-        fs.readdirSync(path).forEach(function (file, index)
+        if (fs.existsSync(path))
         {
-            const curPath = path + "/" + file;
-            if (fs.lstatSync(curPath).isDirectory())
+            fs.readdirSync(path).forEach(function (file, index)
             {
-                deleteFolderRecursive(curPath);
-            }
-            else
-            {
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
+                const curPath = path + "/" + file;
+                if (fs.lstatSync(curPath).isDirectory())
+                {
+                    _deleteFolderRecursive(curPath);
+                }
+                else
+                {
+                    fs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(path);
+        }
     }
+    catch(er)
+    {
+        console.log(" Could not fully wipe Cache data.");
+        process.exit(0);
+    }
+   
 };
 
 
@@ -268,16 +279,19 @@ const Reset = function ()
     }
     console.log(' Clearing Configuration')
 
-    fs.unlinkSync(process.cwd() + "/config.json");
-    
-    fs.writeFileSync(process.cwd() + "/config.json", JSON.stringify(Config), 'utf8', function (err)
+    try
     {
-        if (err)
-        {
-            console.log('Could not create config file')
-        }
-        
-    })
+
+        fs.unlinkSync(process.cwd() + "/config.json");
+    }
+    catch(er)
+    {
+        console.log(" Could not delete config file.");
+        process.exit(0);
+    }
+    
+    saveConfig(Config);
+   
 
     console.log(' Wiping HomeKit cache.')
     _deleteFolderRecursive(process.cwd() + "/homekit")
