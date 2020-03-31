@@ -230,7 +230,7 @@ const Reset = function ()
         "enableIncomingMQTT": "false",
         "MQTTBroker": "mqtt://test.mosquitto.org",
         "MQTTTopic": "homekit-device-stack/+",
-        "MQTTAuth": {
+        "MQTTOptions": {
             "username":"",
             "password":""
         },
@@ -258,7 +258,7 @@ const Reset = function ()
                 "type": "MQTT",
                 "broker": "mqtt://test.mosquitto.org",
                 "topic": "homekitdevicestack",
-                "MQTTAuth": {
+                "MQTTOptions": {
                     "username":"",
                     "password":""
                 }
