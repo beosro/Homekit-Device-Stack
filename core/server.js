@@ -21,9 +21,12 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
     const _RouteSetup = RouteSetup
 
     // MQTT
-    if(config.enableIncomingMQTT == 'true')
+    if(config.hasOwnProperty("enableIncomingMQTT") && config.enableIncomingMQTT == 'true')
     {
-        const MQTTC = mqtt.connect(config.MQTTBroker)
+        const Ops = {"username":config.MQTTAuth.username,"password":config.MQTTAuth.password};
+        
+        const MQTTC = mqtt.connect(config.MQTTBroker,Ops)
+        
         MQTTC.on('connect',function()
         {
             MQTTC.subscribe(config.MQTTTopic,function(err)

@@ -230,6 +230,10 @@ const Reset = function ()
         "enableIncomingMQTT": "false",
         "MQTTBroker": "mqtt://test.mosquitto.org",
         "MQTTTopic": "homekit-device-stack/+",
+        "MQTTAuth": {
+            "username":"",
+            "password":""
+        },
         "bridgeConfig": {
             "pincode": "",
             "username": "",
