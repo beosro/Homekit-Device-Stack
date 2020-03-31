@@ -60,6 +60,8 @@ if (config.bridgeConfig.pincode.length < 10)
 
 }
 
+console.log(" Configuring Homekit Bridge")
+
 // Configure Our Bridge
 const Bridge = new Accessory.Bridge(config.bridgeConfig)
 Bridge.on('PAIR_CHANGE', Paired)
@@ -110,11 +112,11 @@ for (let i = 0; i < config.accessories.length; i++)
     }
 }
 
-
+console.log(" Publishing Bridge")
 Bridge.publish();
 
-console.log(" Starting web server")
-console.log(" ")
+console.log(" Starting Client Services")
+
 
 // Web Server 
 const UIServer = new Server.Server(Accesories,Change,Identify,Bridge,SetupRoutes);

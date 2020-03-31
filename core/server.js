@@ -27,6 +27,13 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
         {
             config.MQTTOptions = {};
         }
+        else if(config.MQTTOptions.username.length<1)
+        {
+            delete config.MQTTOptions["username"]
+            delete config.MQTTOptions["password"]
+        }
+        
+        console.log(" Starting MQTT Client")
         const MQTTC = mqtt.connect(config.MQTTBroker,config.MQTTOptions)
         
         MQTTC.on('connect',function()
@@ -52,7 +59,8 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
     }
     
 
-
+    console.log(" Starting Web Server")
+    console.log(" ")
     // Express
     const app = express()
     app.use(bodyParser.json())
@@ -88,7 +96,8 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
         "Index":process.cwd()+"/ui/templates/index.tpl",
         "Main":process.cwd()+"/ui/templates/main.tpl",
         "Setup":process.cwd()+"/ui/templates/setup.tpl",
-        "Routes":process.cwd()+"/ui/templates/routes.tpl"
+        "Routes":process.cwd()+"/ui/templates/routes.tpl",
+        "MQTT":process.cwd()+"/ui/templates/mqtt.tpl"
     }
 
    
@@ -99,6 +108,9 @@ const Server = function(Accesories, ChangeEvent, IdentifyEvent, Bridge,RouteSetu
 
         switch (Req.type)
         {
+            case "mqtt":
+                _RenderStaticUI(connection,Templates.MQTT)
+                break;
             case "main":
                 _RenderStaticUI(connection,Templates.Main)
                 break;

@@ -7,8 +7,8 @@
     "MQTTBroker": "mqtt://test.mosquitto.org",
     "MQTTTopic": "homekit-device-stack/+",
     "MQTTOptions": {
-        "username":"",
-        "password":""
+        "username": "",
+        "password": ""
     },
     "bridgeConfig": {
         "pincode": "",
@@ -35,8 +35,8 @@
             "broker": "mqtt://test.mosquitto.org",
             "topic": "homekitdevicestack",
             "MQTTOptions": {
-                "username":"",
-                "password":""
+                "username": "",
+                "password": ""
             }
         }
     },

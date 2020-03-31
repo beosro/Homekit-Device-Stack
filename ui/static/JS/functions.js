@@ -28,6 +28,15 @@ function ProcessMessage(Message)
     }
 }
 
+function MQTT()
+{
+    let Req =
+    {
+        "type": "mqtt",
+    }
+    Socket.send(JSON.stringify(Req));
+}
+
 function GetProperties(id)
 {
     const URI = '/accessories/' + id;

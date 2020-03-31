@@ -86,6 +86,12 @@ const MQTT = function(route, payload)
    {
      route.MQTTOptions = {};
    }
+   else if(route.MQTTOptions.username.length<1)
+   {
+    delete route.MQTTOptions["username"]
+    delete route.MQTTOptions["password"]
+   }
+   
    const MQTTC = mqtt.connect(route.broker,route.MQTTOptions)
 
    MQTTC.on('connect',function()
