@@ -89,7 +89,7 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
         switch (Req.type) {
             case "mqtt":
                 _RenderStaticUI(connection, Templates.MQTT)
-                
+
                 break;
             case "main":
                 _RenderStaticUI(connection, Templates.Main)
