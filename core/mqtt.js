@@ -18,41 +18,51 @@ const MQTT = function(Accesories, CB)
         }
         
         console.log(" Starting MQTT Client")
-        const MQTTC = mqtt.connect(config.MQTTBroker,config.MQTTOptions)
 
-        MQTTC.on('error',function(err)
+        try
+        {
+            const MQTTC = mqtt.connect(config.MQTTBroker,config.MQTTOptions)
+
+            MQTTC.on('error',function(err)
+            {
+                console.log(" Could not connect to MQTT Broker : "+err);
+                process.exit(0);
+            })
+            
+            MQTTC.on('connect',function()
+            {
+                MQTTC.subscribe(config.MQTTTopic,function(err)
+                {
+                    if(!err)
+                    {
+                        MQTTC.on('message',function(topic,message)
+                        {
+                            const sPL = message.toString();
+                            const PL = JSON.parse(sPL);
+                            const TargetAccessory = topic.split('/')[1];
+    
+                            const Ac = _Accessories[TargetAccessory]
+                            Ac.setCharacteristics(PL)
+    
+    
+                        })
+    
+                        CB();
+                    }
+                    else
+                    {
+                        console.log(" Could not subscribe to Topic : "+err);
+                        process.exit(0);
+                    }
+                })
+            })
+        }
+        catch(err)
         {
             console.log(" Could not connect to MQTT Broker : "+err);
             process.exit(0);
-        })
+        }
         
-        MQTTC.on('connect',function()
-        {
-            MQTTC.subscribe(config.MQTTTopic,function(err)
-            {
-                if(!err)
-                {
-                    MQTTC.on('message',function(topic,message)
-                    {
-                        const sPL = message.toString();
-                        const PL = JSON.parse(sPL);
-                        const TargetAccessory = topic.split('/')[1];
-
-                        const Ac = _Accessories[TargetAccessory]
-                        Ac.setCharacteristics(PL)
-
-
-                    })
-
-                    CB();
-                }
-                else
-                {
-                    console.log(" Could not subscribe to Topic : "+err);
-                    process.exit(0);
-                }
-            })
-        })
     }
     else
     {

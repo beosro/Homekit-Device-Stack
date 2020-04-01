@@ -68,10 +68,15 @@ The devices Homekit Device Stack can create are as follows (more will become ava
 ## So, it only reports changes?
 Nope!
 
-HomeKit Device Stack has a REST based API, that is used to alter the devices state, this alterred state is then reflected in HomeApp, or any other Homekit enabled application.
-changes originating from a call to the API will cause routes to trigger - making use of the **source** object can be used to filter these out.
+HomeKit Device Stack has 2 network based inputs.  
 
-The URL for the API is **http://IP-ADDRESS:7989/admin-password/**
+  - A REST based HTTP API
+  - MQTT Topic Subscription  
+
+Both these inputs allow manipulation of the accessory states. These altered states are then reflected in HomeApp, or any other Homekit based application.  
+Changes originating from these inputs will cause routes to trigger - making use of the **source** object can be used to filter these out.
+
+The URL for the REST API is **http://IP-ADDRESS:7989/admin-password/**
 
   - GET **/accessories**             | Lists all accessories and there current characteristics
   - GET **/accessories/accessoryID** | Same as above but for the identified accessory
@@ -85,13 +90,11 @@ The body in your HTTP PUT command, should be nothing more than a JSON object rep
   "OutletInUse": true
 }
 ```
-HomeKit Device Stack also supports incoming MQTT messages for altering device states.  
-The format of the message is the same as above. the topic of the message should be : **homekit-device-stack/accessoryID**.  
-
+The same format should be used for MQTT messages. The topic should be : **homekit-device-stack/accessoryID**.  
 You can change the root topic name in the UI. 
 
 ## Does It Run On My Microwave?
-Not yet!
+Not yet!  
 It will run on any platform that runs NodeJS (Windows, Linux, OSX, Raspberry Pi).
 
 ## Installing   

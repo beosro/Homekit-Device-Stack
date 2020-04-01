@@ -44,6 +44,27 @@ const updateRouteConfig = function(Config)
 
 }
 
+const updateMQTT = function(Config)
+{
+    const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+    const ConfigOBJ = JSON.parse(CFF);
+
+    ConfigOBJ.enableIncomingMQTT = Config.enableIncomingMQTT;
+    ConfigOBJ.MQTTBroker = Config.MQTTBroker;
+    ConfigOBJ.MQTTTopic = Config.MQTTTopic;
+
+    if(!ConfigOBJ.hasOwnProperty('MQTTOptions'))
+    {
+        ConfigOBJ.MQTTOptions = {}
+    }
+
+    ConfigOBJ.MQTTOptions.username = Config.username
+    ConfigOBJ.MQTTOptions.password = Config.password
+
+    saveConfig(ConfigOBJ);
+
+}
+
 const appendAccessoryToConfig = function(Accessory)
 {
     const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
@@ -309,5 +330,6 @@ module.exports = {
     saveBridgeConfig:saveBridgeConfig,
     updateRouteConfig:updateRouteConfig,
     checkPassword:checkPassword,
-    deleteAccessory:deleteAccessory
+    deleteAccessory:deleteAccessory,
+    updateMQTT:updateMQTT
 }

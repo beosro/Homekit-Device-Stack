@@ -89,6 +89,7 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
         switch (Req.type) {
             case "mqtt":
                 _RenderStaticUI(connection, Templates.MQTT)
+                
                 break;
             case "main":
                 _RenderStaticUI(connection, Templates.Main)
@@ -126,6 +127,11 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
                 _deleteAccessory(Req.accessory, connection);
                 break;
 
+            case "savemqtt":
+                _saveMQTT(Req.MQTTConfig,connection);
+                break;
+
+
         }
     }
 
@@ -146,6 +152,27 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
 
         connection.send(JSON.stringify(PL));
     }
+
+    function _saveMQTT(Config,connection)
+    {
+
+        config.enableIncomingMQTT = Config.enableIncomingMQTT;
+        config.MQTTBroker = Config.MQTTBroker;
+        config.MQTTTopic = Config.MQTTTopic;
+    
+        if(!config.hasOwnProperty('MQTTOptions'))
+        {
+            config.MQTTOptions = {}
+        }
+    
+        config.MQTTOptions.username = Config.username
+        config.MQTTOptions.password = Config.password
+
+
+        util.updateMQTT(Config);
+        _RenderStaticUI(connection, Templates.Main)
+    }
+
     function _deleteAccessory(accessoryId, connection) {
         //removeAccessory
         const Acs = _Bridge.getAccessories();
