@@ -1,10 +1,9 @@
 'use strict'
-const http = require('http')
-const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const dgram = require("dgram");
 const mqtt = require('mqtt')
+const axios = require('axios')
 
 const HTTP = function (route, payload)
 {
@@ -19,25 +18,23 @@ const HTTP = function (route, payload)
   delete Copy.accessory.description;
   delete Copy.accessory.serialNumber;
   Copy["route_type"] = "HTTP"
-
-  const Data = JSON.stringify(Copy)
-  const URI = url.parse(route.destinationURI)
-
-  const options = {
-    hostname: URI.hostname,
-    port: URI.port,
-    path: URI.pathname,
-    method: "POST",
+  
+  const CFG = {
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Data.length
-    }
+    },
+    url:route.destinationURI,
+    method:'post',
+    data:Copy
   }
 
-  const req = http.request(options, (res) => { });
-  req.on('error', (err) =>{})
-  req.write(Data);
-  req.end()
+  axios.request(CFG)
+    .then(function(res){})
+    .catch(function(err)
+    {
+      console.log(" Could not send HTTP request : "+err);
+    })
+
 }
 
 const UDP = function(route, payload)
@@ -58,9 +55,14 @@ const UDP = function(route, payload)
   server.bind(function(){
     
     server.setBroadcast(true);
+
     const STRING = JSON.stringify(Copy)
     server.send(STRING,0,STRING.length,route.port,route.address,function(e,n)
     {
+      if(e)
+      {
+        console.log(" Could not broadcast UDP: "+e);
+      }
       server.close();
     });
   });
@@ -86,7 +88,7 @@ const MQTT = function(route, payload)
    {
      route.MQTTOptions = {};
    }
-   else if(route.MQTTOptions.username.length<1)
+   else if(route.MQTTOptions.hasOwnProperty("username") && route.MQTTOptions.username.length<1)
    {
     delete route.MQTTOptions["username"]
     delete route.MQTTOptions["password"]
@@ -96,8 +98,8 @@ const MQTT = function(route, payload)
 
    MQTTC.on('error',function(err)
    {
-       console.log(" Could not connect to MQTT Broker");
-       process.exit(0);
+       console.log(" Could not connect to MQTT Broker : "+err);
+       
    })
 
    MQTTC.on('connect',function()
@@ -129,10 +131,11 @@ const FILE = function (route, payload)
   const Path = path.join(route.directory, DT + '_' + payload.accessory.accessoryID + ".json")
   fs.writeFile(Path, JSON.stringify(Copy), 'utf8', function (err)
   {
-    if (err){
+    if (err)
+    {
 
       console.log(" Could not write output to file.");
-      process.exit(0);
+     
     
     }
 

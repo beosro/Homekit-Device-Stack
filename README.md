@@ -119,7 +119,8 @@ library, without it, projects like this one are not possible.
   - **1.1.0**  
     Ability to manipulate devices via MQTT  
     Improved error handling  
-    Fixed showing loopback address in console.
+    Fixed showing loopback address in console.  
+    Switched to using axios for the HTTP route type
   - **1.0.1**  
     Fixed typo in read me
   - **1.0.0**  
