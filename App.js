@@ -119,7 +119,7 @@ Bridge.publish();
 console.log(" Starting Client Services")
 
 // Web Server (started later)
-const UIServer = new Server.Server(Accesories,Change,Identify,Bridge,SetupRoutes,UIServerDone);
+const UIServer = new Server.Server(Accesories,Change,Identify,Bridge,SetupRoutes);
 
 // MQTT Client
 const MQTTC = new mqtt.MQTT(Accesories, MQTTDone)
