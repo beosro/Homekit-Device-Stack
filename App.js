@@ -5,6 +5,8 @@ const fs = require('fs');
 const util = require('./core/util');
 const routes = require('./core/routes');
 const config = require(process.cwd() + "/config.json");
+const ip = require("ip");
+const mqtt = require('./core/mqtt');
 
 console.log('\033[2J');
 
@@ -29,9 +31,6 @@ console.log(chalk.keyword('orange')(" __________________________________________
 console.log(" ")
 
 'use strict'
-
-
-
 
 if (config.bridgeConfig.pincode.length < 10)
 {
@@ -60,6 +59,8 @@ if (config.bridgeConfig.pincode.length < 10)
 
 }
 
+console.log(" Configuring Homekit Bridge")
+
 // Configure Our Bridge
 const Bridge = new Accessory.Bridge(config.bridgeConfig)
 Bridge.on('PAIR_CHANGE', Paired)
@@ -71,6 +72,7 @@ const Routes = {
 function SetupRoutes()
 {
 
+    // clear any Routes - to support updating them later
     const Keys = Object.keys(Routes);
     for(let i = 0;i<Keys.length;i++)
     {
@@ -85,6 +87,7 @@ function SetupRoutes()
 
    
 }
+// This is also called externally (i.e when updating routes via the UI)
 SetupRoutes();
 
 // Configure Our Accessories 
@@ -110,34 +113,48 @@ for (let i = 0; i < config.accessories.length; i++)
     }
 }
 
-
+console.log(" Publishing Bridge")
 Bridge.publish();
 
-console.log(" Starting web server")
-console.log(" ")
+console.log(" Starting Client Services")
 
-// Web Server 
-const UIServer = new Server.Server(Accesories,Change,Identify,Bridge,SetupRoutes);
+// Web Server (started later)
+const UIServer = new Server.Server(Accesories,Change,Identify,Bridge,SetupRoutes,UIServerDone);
 
-const BridgeFileName = process.cwd() + "/homekit/AccessoryInfo." + config.bridgeConfig.username.replace(/:/g, "") + ".json";
-if (fs.existsSync(BridgeFileName))
+// MQTT Client
+const MQTTC = new mqtt.MQTT(Accesories, MQTTDone)
+function MQTTDone()
 {
-    const IsPaired = Object.keys(require(BridgeFileName).pairedClients)
-    UIServer.setBridgePaired(IsPaired.length>0);
+    UIServer.Start(UIServerDone)
 }
 
-// All done.
-const Address = chalk.keyword('green')("http://127.0.0.1:" + config.webInterfacePort+"/")
+function UIServerDone()
+{
+    const BridgeFileName = process.cwd() + "/homekit/AccessoryInfo." + config.bridgeConfig.username.replace(/:/g, "") + ".json";
+    if (fs.existsSync(BridgeFileName))
+    {
+        const IsPaired = Object.keys(require(BridgeFileName).pairedClients)
+        UIServer.setBridgePaired(IsPaired.length>0);
+    }
+    
+    // All done.
+    const Address = chalk.keyword('red')("http://"+ ip.address()+":" + config.webInterfacePort+"/")
+    
+    console.log(" "+chalk.black.bgWhite("┌─────────────────────────────────────────────────────────────────────────┐"))
+    console.log(" " + chalk.black.bgWhite("|    Goto "+Address+" to start managing your installation.     |"))
+    console.log(" "+chalk.black.bgWhite("|    Default username and password is admin                               |"))
+    console.log(" " + chalk.black.bgWhite("└─────────────────────────────────────────────────────────────────────────┘"))
+}
 
-console.log(" "+chalk.black.bgWhite("┌─────────────────────────────────────────────────────────────────────────┐"))
-console.log(" " + chalk.black.bgWhite("|    Goto "+Address+" to start managing your installation.     |"))
-console.log(" "+chalk.black.bgWhite("|    Default username and password is admin                               |"))
-console.log(" " + chalk.black.bgWhite("└─────────────────────────────────────────────────────────────────────────┘"))
+
+
+
 
 
 process.on('exit', function (code)
 {
-    console.info('Unpublishing Accessories...')
+    console.info(' Unpublishing Accessories...')
+    console.info(' ')
     Bridge.unpublish(false);
    
 });

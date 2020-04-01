@@ -68,10 +68,15 @@ The devices Homekit Device Stack can create are as follows (more will become ava
 ## So, it only reports changes?
 Nope!
 
-HomeKit Device Stack has a REST based API, that is used to alter the devices state, this alterred state is then reflected in HomeApp, or any other Homekit enabled application.
-changes originating from a call to the API will cause routes to trigger - making use of the **source** object can be used to filter these out.
+HomeKit Device Stack has 2 network based inputs.  
 
-The URL for the API is **http://IP-ADDRESS:7989/admin-password/**
+  - A REST based HTTP API
+  - MQTT Topic Subscription  
+
+Both these inputs allow manipulation of the accessory states. These altered states are then reflected in HomeApp, or any other Homekit based application.  
+Changes originating from these inputs will cause routes to trigger - making use of the **source** object can be used to filter these out.
+
+The URL for the REST API is **http://IP-ADDRESS:7989/admin-password/**
 
   - GET **/accessories**             | Lists all accessories and there current characteristics
   - GET **/accessories/accessoryID** | Same as above but for the identified accessory
@@ -85,9 +90,11 @@ The body in your HTTP PUT command, should be nothing more than a JSON object rep
   "OutletInUse": true
 }
 ```
+The same format should be used for MQTT messages. The topic should be : **homekit-device-stack/accessoryID**.  
+You can change the root topic name in the UI. 
 
 ## Does It Run On My Microwave?
-Not yet!
+Not yet!  
 It will run on any platform that runs NodeJS (Windows, Linux, OSX, Raspberry Pi).
 
 ## Installing   
@@ -104,7 +111,7 @@ Within the directory that HomeKit Device Stack is installed.
 If creating an auto start script - ensure the script is set to run under the installed directory
 
 ## Command line arguments
-**reset** - Completely Resets HomeKit Device Stack, bringing it back to its default/unconfigured state (inlcuding the default password)  
+**reset** - Completely Resets HomeKit Device Stack (inits a default configuration)  
 **passwd** mypassword - set the admin password
 
 ## Credits
@@ -112,14 +119,20 @@ HomeKit Device Stack is based on the awesome [HAP-NodeJS](https://github.com/Kha
 library, without it, projects like this one are not possible.
 
 ## Version History
-  - 1.0.0  
-    Initial Release  
-  - 1.0.1  
+  - **1.1.0**  
+    Added ability to manipulate devices via MQTT  
+    Improved error handling  
+    Fixed showing loopback address in console.  
+    Switched to using axios for the HTTP route type  
+    Switched to internal NodeJS crypto library
+  - **1.0.1**  
     Fixed typo in read me
+  - **1.0.0**  
+    Initial Release  
+
 
 ## To Do
   - Create a better UI for managing Routes
   - Continue to add more accessory types
-  - Look into more ways to manipulate devices other than just HTTP (MQTT, UDP etc)
 
 

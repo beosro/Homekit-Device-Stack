@@ -44,6 +44,27 @@ const updateRouteConfig = function(Config)
 
 }
 
+const updateMQTT = function(Config)
+{
+    const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+    const ConfigOBJ = JSON.parse(CFF);
+
+    ConfigOBJ.enableIncomingMQTT = Config.enableIncomingMQTT;
+    ConfigOBJ.MQTTBroker = Config.MQTTBroker;
+    ConfigOBJ.MQTTTopic = Config.MQTTTopic;
+
+    if(!ConfigOBJ.hasOwnProperty('MQTTOptions'))
+    {
+        ConfigOBJ.MQTTOptions = {}
+    }
+
+    ConfigOBJ.MQTTOptions.username = Config.username
+    ConfigOBJ.MQTTOptions.password = Config.password
+
+    saveConfig(ConfigOBJ);
+
+}
+
 const appendAccessoryToConfig = function(Accessory)
 {
     const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
@@ -97,7 +118,9 @@ const saveConfig = function(config)
     {
         if (err)
         {
-            
+            console.log(" Could not right to the config file.");
+            process.exit(0);
+
         }
         
     })
@@ -107,22 +130,31 @@ const saveConfig = function(config)
 
 const _deleteFolderRecursive = function (path)
 {
-    if (fs.existsSync(path))
+    try
     {
-        fs.readdirSync(path).forEach(function (file, index)
+        if (fs.existsSync(path))
         {
-            const curPath = path + "/" + file;
-            if (fs.lstatSync(curPath).isDirectory())
+            fs.readdirSync(path).forEach(function (file, index)
             {
-                deleteFolderRecursive(curPath);
-            }
-            else
-            {
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
+                const curPath = path + "/" + file;
+                if (fs.lstatSync(curPath).isDirectory())
+                {
+                    _deleteFolderRecursive(curPath);
+                }
+                else
+                {
+                    fs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(path);
+        }
     }
+    catch(er)
+    {
+        console.log(" Could not fully wipe Cache data.");
+        process.exit(0);
+    }
+   
 };
 
 
@@ -227,6 +259,13 @@ const Reset = function ()
         "loginPassword": "21232f297a57a5a743894a0e4a801fc3",
         "wsCommPort": 7990,
         "webInterfacePort": 7989,
+        "enableIncomingMQTT": "false",
+        "MQTTBroker": "mqtt://test.mosquitto.org",
+        "MQTTTopic": "homekit-device-stack/+",
+        "MQTTOptions": {
+            "username":"",
+            "password":""
+        },
         "bridgeConfig": {
             "pincode": "",
             "username": "",
@@ -250,23 +289,30 @@ const Reset = function ()
             "MQTTBroker": {
                 "type": "MQTT",
                 "broker": "mqtt://test.mosquitto.org",
-                "topic": "homekitdevicestack"
+                "topic": "homekitdevicestack",
+                "MQTTOptions": {
+                    "username":"",
+                    "password":""
+                }
             }
         },
         "accessories": []
     }
     console.log(' Clearing Configuration')
 
-    fs.unlinkSync(process.cwd() + "/config.json");
-    
-    fs.writeFileSync(process.cwd() + "/config.json", JSON.stringify(Config), 'utf8', function (err)
+    try
     {
-        if (err)
-        {
-            console.log('Could not create config file')
-        }
-        
-    })
+
+        fs.unlinkSync(process.cwd() + "/config.json");
+    }
+    catch(er)
+    {
+        console.log(" Could not delete config file.");
+        process.exit(0);
+    }
+    
+    saveConfig(Config);
+   
 
     console.log(' Wiping HomeKit cache.')
     _deleteFolderRecursive(process.cwd() + "/homekit")
@@ -284,5 +330,6 @@ module.exports = {
     saveBridgeConfig:saveBridgeConfig,
     updateRouteConfig:updateRouteConfig,
     checkPassword:checkPassword,
-    deleteAccessory:deleteAccessory
+    deleteAccessory:deleteAccessory,
+    updateMQTT:updateMQTT
 }

@@ -3,6 +3,13 @@
     "loginPassword": "21232f297a57a5a743894a0e4a801fc3",
     "wsCommPort": 7990,
     "webInterfacePort": 7989,
+    "enableIncomingMQTT": "false",
+    "MQTTBroker": "mqtt://test.mosquitto.org",
+    "MQTTTopic": "homekit-device-stack/+",
+    "MQTTOptions": {
+        "username": "",
+        "password": ""
+    },
     "bridgeConfig": {
         "pincode": "",
         "username": "",
@@ -26,7 +33,11 @@
         "MQTTBroker": {
             "type": "MQTT",
             "broker": "mqtt://test.mosquitto.org",
-            "topic": "homekitdevicestack"
+            "topic": "homekitdevicestack",
+            "MQTTOptions": {
+                "username": "",
+                "password": ""
+            }
         }
     },
     "accessories": []

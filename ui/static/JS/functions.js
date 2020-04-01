@@ -28,6 +28,38 @@ function ProcessMessage(Message)
     }
 }
 
+function MQTT()
+{
+    let Req =
+    {
+        "type": "mqtt",
+    }
+    Socket.send(JSON.stringify(Req));
+}
+
+function SaveMQTT()
+{
+    let Req =
+    {
+        "type": "savemqtt",
+        "MQTTConfig":
+        {
+            "enableIncomingMQTT":$("#Enable").val(),
+            "MQTTBroker":$("#Broker").val(),
+            "MQTTTopic":$("#Topic").val(),
+            "username":$("#Username").val(),
+            "password":$("#Password").val()
+
+
+        }
+
+        
+        
+    }
+
+    Socket.send(JSON.stringify(Req));
+}
+
 function GetProperties(id)
 {
     const URI = '/accessories/' + id;
