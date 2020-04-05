@@ -296,7 +296,7 @@ const Config = {
         },
         "FileOutput": {
             "type": "FILE",
-            "directory": "./DeviceChangeEvents"
+            "directory": "DeviceChangeEvents"
         },
         "MQTTBroker": {
             "type": "MQTT",
