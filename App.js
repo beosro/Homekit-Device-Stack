@@ -173,25 +173,33 @@ function Paired(IsPaired)
 
 function Change(PL, Object,Originator)
 {
-    const Payload = {
-        "accessory": Object,
-        "type": "change",
-        "change": PL,
-        "source":Originator
+    if(Object.hasOwnProperty("route"))
+    {
+        const Payload = {
+            "accessory": Object,
+            "type": "change",
+            "change": PL,
+            "source":Originator
+        }
+    
+        Routes[Object.route](config.routes[Object.route],Payload);
     }
-
-    Routes[Object.route](config.routes[Object.route],Payload);
+   
 }
 
 function Identify(paired, Object)
 {
-    const Payload = {
-        "accessory": Object,
-        "type": "identify",
-        "isPaired": paired,
+    if(Object.hasOwnProperty("route"))
+    {
+        const Payload = {
+            "accessory": Object,
+            "type": "identify",
+            "isPaired": paired,
+        }
+    
+        Routes[Object.route](config.routes[Object.route],Payload);
     }
-
-    Routes[Object.route](config.routes[Object.route],Payload);
+   
 }
 
 
