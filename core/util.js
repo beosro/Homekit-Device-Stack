@@ -1,19 +1,20 @@
 ﻿'use strict'
 const fs = require('fs');
+const path = require('path');
 const readline = require("readline");
 const chalk = require('chalk');
 const crypto = require('crypto')
 const os = require('os');
 
-const ConfigPath = os.homedir()+"/HomeKitDeviceStack/config.json";
-const HomeKitPath = os.homedir()+"/HomeKitDeviceStack/HomeKitPersist";
+const ConfigPath = path.join(os.homedir(),"HomeKitDeviceStack","config.json");
+const HomeKitPath = path.join(os.homedir(),"HomeKitDeviceStack","HomeKitPersist");
 
 const CheckNewEV = function()   
 {
     if(!fs.existsSync(ConfigPath))
     {
     
-        fs.mkdirSync(os.homedir()+"/HomeKitDeviceStack/")
+        fs.mkdirSync(path.join(os.homedir(),"HomeKitDeviceStack"))
         Reset();
     }
 }

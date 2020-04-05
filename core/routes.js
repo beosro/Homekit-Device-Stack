@@ -158,7 +158,7 @@ const FILE = function (route, payload)
 
 
   const DT = new Date().getTime();
-  const Path = path.join(os.homedir()+"/HomeKitDeviceStack/",route.directory, DT + '_' + payload.accessory.accessoryID + ".json")
+  const Path = path.join(os.homedir(),"HomeKitDeviceStack",route.directory, DT + '_' + payload.accessory.accessoryID + ".json")
   fs.writeFile(Path, JSON.stringify(Copy), 'utf8', function (err)
   {
     if (err)
