@@ -6,15 +6,16 @@ const chalk = require('chalk');
 const crypto = require('crypto')
 const os = require('os');
 
-const ConfigPath = path.join(os.homedir(),"HomeKitDeviceStack","config.json");
-const HomeKitPath = path.join(os.homedir(),"HomeKitDeviceStack","HomeKitPersist");
+const RootPath = path.join(os.homedir(),"HomeKitDeviceStack");
+const ConfigPath = path.join(RootPath,"config.json");
+const HomeKitPath = path.join(RootPath,"HomeKitPersist");
 
 const CheckNewEV = function()   
 {
     if(!fs.existsSync(ConfigPath))
     {
     
-        fs.mkdirSync(path.join(os.homedir(),"HomeKitDeviceStack"))
+        fs.mkdirSync(RootPath)
         Reset();
     }
 }
@@ -354,5 +355,6 @@ module.exports = {
     updateMQTT:updateMQTT,
     ConfigPath:ConfigPath,
     HomeKitPath:HomeKitPath,
+    RootPath:RootPath,
     CheckNewEV:CheckNewEV
 }

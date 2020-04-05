@@ -84,14 +84,17 @@ AccessoryCLS.prototype._wireUpEvents = function(targetService,EventStruct)
 */
 AccessoryCLS.prototype._set = function(property, value, callback, hap)
 {
+    this._Properties[property] = value;
+    callback(null);
+
     const PL = {
         "characteristic": property,
         "value": value,
      }
 
      this.emit("STATE_CHANGE", PL,hap == null ? "API" : "iOS_DEVICE");
-     this._Properties[property] = value;
-     callback(null);
+     
+     
 }
 /** 
 * Internal get

@@ -4,7 +4,7 @@ const path = require('path');
 const dgram = require("dgram");
 const mqtt = require('mqtt')
 const axios = require('axios')
-const os = require('os')
+const util = require('./util')
 
 var UDPServer;
 const MQTTCs = {};
@@ -139,9 +139,11 @@ const MQTT = function (route, payload)
 const FILE = function (route, payload)
 {
 
-  if(!fs.existsSync(os.homedir()+"/HomeKitDeviceStack/"+route.directory))
+  
+
+  if(!fs.existsSync(path.join(util.RootPath,route.directory)))
   {
-    fs.mkdirSync(os.homedir()+"/HomeKitDeviceStack/"+route.directory)
+    fs.mkdirSync(path.join(util.RootPath,route.directory))
   }
 
   let Copy = JSON.parse(JSON.stringify(payload));
@@ -158,7 +160,7 @@ const FILE = function (route, payload)
 
 
   const DT = new Date().getTime();
-  const Path = path.join(os.homedir(),"HomeKitDeviceStack",route.directory, DT + '_' + payload.accessory.accessoryID + ".json")
+  const Path = path.join(util.RootPath,route.directory, DT + '_' + payload.accessory.accessoryID + ".json")
   fs.writeFile(Path, JSON.stringify(Copy), 'utf8', function (err)
   {
     if (err)

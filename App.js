@@ -11,6 +11,7 @@ const routes = require('./core/routes');
 const config = require(util.ConfigPath);
 const ip = require("ip");
 const mqtt = require('./core/mqtt');
+const path = require('path');
 
 console.log('\033[2J');
 
@@ -134,7 +135,7 @@ function MQTTDone()
 
 function UIServerDone()
 {
-    const BridgeFileName = util.HomeKitPath + "/AccessoryInfo." + config.bridgeConfig.username.replace(/:/g, "") + ".json";
+    const BridgeFileName = path.join(util.HomeKitPath,"AccessoryInfo." + config.bridgeConfig.username.replace(/:/g, "") + ".json");
     if (fs.existsSync(BridgeFileName))
     {
         const IsPaired = Object.keys(require(BridgeFileName).pairedClients)
