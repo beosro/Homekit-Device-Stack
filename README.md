@@ -121,8 +121,8 @@ library, without it, projects like this one are not possible.
 ## Version History  
   - **2.0.0**  
   
-    **BREAKING CHANGE!**  
-    
+    **BREAKING CHANGES!**  
+
     Bump all dependencies to latest stable releases
 
     Relocated HKDS and HomeKit configuration (config now survives updates)  
