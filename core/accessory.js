@@ -250,12 +250,10 @@ const _setWithBattery = function (payload)
         if (BatteryTargets.includes(Props[i]))
         {
             this._batteryService.setCharacteristic(Characteristic[Props[i]], payload[Props[i]])
-            this._Properties[Props[i]] = payload[Props[i]];
         }
         else
         {
             this._service.setCharacteristic(Characteristic[Props[i]], payload[Props[i]])
-            this._Properties[Props[i]] = payload[Props[i]];
         }
 
     }
