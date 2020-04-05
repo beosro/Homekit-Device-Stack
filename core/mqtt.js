@@ -1,5 +1,6 @@
 const mqtt = require('mqtt')
-const config = require(process.cwd() + "/config.json");
+const util = require('./util');
+const config = require(util.ConfigPath);
 
 const MQTT = function(Accesories, CB)
 {

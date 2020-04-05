@@ -1,10 +1,14 @@
-﻿const chalk = require('chalk');
+﻿const util = require('./core/util');
+
+// Fresh Environment ?
+util.CheckNewEV();
+
+const fs = require('fs');
+const chalk = require('chalk');
 const Server = require('./core/server');
 const Accessory = require('./core/accessory');
-const fs = require('fs');
-const util = require('./core/util');
 const routes = require('./core/routes');
-const config = require(process.cwd() + "/config.json");
+const config = require(util.ConfigPath);
 const ip = require("ip");
 const mqtt = require('./core/mqtt');
 
@@ -130,7 +134,7 @@ function MQTTDone()
 
 function UIServerDone()
 {
-    const BridgeFileName = process.cwd() + "/homekit/AccessoryInfo." + config.bridgeConfig.username.replace(/:/g, "") + ".json";
+    const BridgeFileName = util.HomeKitPath + "/AccessoryInfo." + config.bridgeConfig.username.replace(/:/g, "") + ".json";
     if (fs.existsSync(BridgeFileName))
     {
         const IsPaired = Object.keys(require(BridgeFileName).pairedClients)

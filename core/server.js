@@ -4,10 +4,10 @@ const websocket = require('ws')
 const crypto = require('crypto')
 const mustache = require('mustache');
 const fs = require('fs');
-const config = require(process.cwd() + "/config.json");
 const bodyParser = require('body-parser')
 const Accessory = require('./accessory');
 const util = require('./util');
+const config = require(util.ConfigPath);
 
 
 

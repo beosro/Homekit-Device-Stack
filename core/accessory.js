@@ -9,6 +9,7 @@ const AccessoryEventTypes = HapNodeJS.AccessoryEventTypes;
 const EventEmitter = require("events");
 const PKG = require('../package.json');
 const CameraSource = require('./cameraSource');
+const Util = require('./util');
 
 
 /** 
@@ -23,7 +24,7 @@ class AccessoryCLS extends EventEmitter
         super();
         
         this._Properties = {};
-        HapNodeJS.init(process.cwd() + "/homekit");
+        HapNodeJS.init(Util.HomeKitPath);
 
         const UUID = uuid.generate('hap-nodejs:accessories:'+ AccessoryOBJ.name+':'+AccessoryOBJ.username);
         this._accessory = new Accessory(AccessoryOBJ.name, UUID);

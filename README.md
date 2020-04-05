@@ -119,8 +119,13 @@ HomeKit Device Stack is based on the awesome [HAP-NodeJS](https://github.com/Kha
 library, without it, projects like this one are not possible.
 
 ## Version History  
-**WARNING!**  
-Ensure to backup the **config.json** file before updating, as it will get overwritten. You can replace it after the update.  
+  - **2.0.0 BREAKING CHANGE**  
+    Relocated HKDS and HomeKit configuration (config now survives updates)  
+
+    Make a copy of your **config.json** file and any files inside the **HomeKit** dir.  
+    **config.json** -> **HomeDirectory/HomeKitDeviceStack**  
+    **HomeKit/*.json** -> **HomeDirectory/HomeKitDeviceStack/HomeKitPersist**
+    
 
   - **1.1.3**  
     Update Read Me 

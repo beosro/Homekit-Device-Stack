@@ -3,6 +3,20 @@ const fs = require('fs');
 const readline = require("readline");
 const chalk = require('chalk');
 const crypto = require('crypto')
+const os = require('os');
+
+const ConfigPath = os.homedir()+"/HomeKitDeviceStack/config.json";
+const HomeKitPath = os.homedir()+"/HomeKitDeviceStack/HomeKitPersist";
+
+const CheckNewEV = function()   
+{
+    if(!fs.existsSync(ConfigPath))
+    {
+    
+        fs.mkdirSync(os.homedir()+"/HomeKitDeviceStack/")
+        Reset();
+    }
+}
 
 const getRndInteger = function (min, max)
 {
@@ -35,7 +49,7 @@ const makeID = function (length)
 
 const updateRouteConfig = function(Config)
 {
-    const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+    const CFF = fs.readFileSync(ConfigPath, 'utf8');
     const ConfigOBJ = JSON.parse(CFF);
 
     ConfigOBJ.routes = Config;
@@ -46,7 +60,7 @@ const updateRouteConfig = function(Config)
 
 const updateMQTT = function(Config)
 {
-    const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+    const CFF = fs.readFileSync(ConfigPath, 'utf8');
     const ConfigOBJ = JSON.parse(CFF);
 
     ConfigOBJ.enableIncomingMQTT = Config.enableIncomingMQTT;
@@ -67,7 +81,7 @@ const updateMQTT = function(Config)
 
 const appendAccessoryToConfig = function(Accessory)
 {
-    const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+    const CFF = fs.readFileSync(ConfigPath, 'utf8');
     const ConfigOBJ = JSON.parse(CFF);
 
     ConfigOBJ.accessories.push(Accessory);
@@ -78,7 +92,7 @@ const appendAccessoryToConfig = function(Accessory)
 
 const editAccessory = function(Accessory, username)
 {
-    const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+    const CFF = fs.readFileSync(ConfigPath, 'utf8');
     const ConfigOBJ = JSON.parse(CFF);
 
   
@@ -104,7 +118,7 @@ const editAccessory = function(Accessory, username)
 
 const saveBridgeConfig = function(config)
 {
-    const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+    const CFF = fs.readFileSync(ConfigPath, 'utf8');
     const ConfigOBJ = JSON.parse(CFF);
 
     ConfigOBJ.bridgeConfig = config;
@@ -114,7 +128,7 @@ const saveBridgeConfig = function(config)
 
 const saveConfig = function(config)
 {
-    fs.writeFileSync(process.cwd() + "/config.json", JSON.stringify(config), 'utf8', function (err)
+    fs.writeFileSync(ConfigPath, JSON.stringify(config), 'utf8', function (err)
     {
         if (err)
         {
@@ -167,7 +181,7 @@ const checkPassword = function()
             const NPWD =  process.argv[3];
             const PW = crypto.createHash('md5').update(NPWD).digest("hex");
 
-            const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+            const CFF = fs.readFileSync(ConfigPath, 'utf8');
             const ConfigOBJ = JSON.parse(CFF);
 
             ConfigOBJ.loginPassword = PW;
@@ -186,7 +200,7 @@ const checkPassword = function()
 
 const deleteAccessory = function(id)
 {
-    const CFF = fs.readFileSync(process.cwd() + "/config.json", 'utf8');
+    const CFF = fs.readFileSync(ConfigPath, 'utf8');
     const ConfigOBJ = JSON.parse(CFF);
 
     
@@ -252,70 +266,75 @@ const checkReset = function ()
     }
 }
 
+const Config = {
+    "loginUsername": "admin",
+    "loginPassword": "21232f297a57a5a743894a0e4a801fc3",
+    "wsCommPort": 7990,
+    "webInterfacePort": 7989,
+    "enableIncomingMQTT": "false",
+    "MQTTBroker": "mqtt://test.mosquitto.org",
+    "MQTTTopic": "homekit-device-stack/+",
+    "MQTTOptions": {
+        "username":"",
+        "password":""
+    },
+    "bridgeConfig": {
+        "pincode": "",
+        "username": "",
+        "setupID": "",
+        "serialNumber": ""
+    },
+    "routes": {
+        "NodeRed": {
+            "type": "HTTP",
+            "destinationURI": "http://10.0.0.2:1880/HKDS"
+        },
+        "UDPBroadcast": {
+            "type": "UDP",
+            "address": "255.255.255.255",
+            "port": 34322
+        },
+        "FileOutput": {
+            "type": "FILE",
+            "directory": "./DeviceChangeEvents"
+        },
+        "MQTTBroker": {
+            "type": "MQTT",
+            "broker": "mqtt://test.mosquitto.org",
+            "topic": "homekitdevicestack",
+            "MQTTOptions": {
+                "username":"",
+                "password":""
+            }
+        }
+    },
+    "accessories": []
+}
+
 const Reset = function ()
 {
-    const Config = {
-        "loginUsername": "admin",
-        "loginPassword": "21232f297a57a5a743894a0e4a801fc3",
-        "wsCommPort": 7990,
-        "webInterfacePort": 7989,
-        "enableIncomingMQTT": "false",
-        "MQTTBroker": "mqtt://test.mosquitto.org",
-        "MQTTTopic": "homekit-device-stack/+",
-        "MQTTOptions": {
-            "username":"",
-            "password":""
-        },
-        "bridgeConfig": {
-            "pincode": "",
-            "username": "",
-            "setupID": "",
-            "serialNumber": ""
-        },
-        "routes": {
-            "NodeRed": {
-                "type": "HTTP",
-                "destinationURI": "http://10.0.0.2:1880/HKDS"
-            },
-            "UDPBroadcast": {
-                "type": "UDP",
-                "address": "255.255.255.255",
-                "port": 34322
-            },
-            "FileOutput": {
-                "type": "FILE",
-                "directory": "./DeviceChangeEvents"
-            },
-            "MQTTBroker": {
-                "type": "MQTT",
-                "broker": "mqtt://test.mosquitto.org",
-                "topic": "homekitdevicestack",
-                "MQTTOptions": {
-                    "username":"",
-                    "password":""
-                }
-            }
-        },
-        "accessories": []
-    }
-    console.log(' Clearing Configuration')
-
-    try
+    if(fs.existsSync(ConfigPath))
     {
+        console.log(' Clearing Configuration')
 
-        fs.unlinkSync(process.cwd() + "/config.json");
+        try
+        {
+    
+            fs.unlinkSync(ConfigPath);
+        }
+        catch(er)
+        {
+            console.log(" Could not delete config file.");
+            process.exit(0);
+        }
     }
-    catch(er)
-    {
-        console.log(" Could not delete config file.");
-        process.exit(0);
-    }
+   
     
     saveConfig(Config);
    
 
     console.log(' Wiping HomeKit cache.')
-    _deleteFolderRecursive(process.cwd() + "/homekit")
+    _deleteFolderRecursive(HomeKitPath)
 
 }
 
@@ -331,5 +350,8 @@ module.exports = {
     updateRouteConfig:updateRouteConfig,
     checkPassword:checkPassword,
     deleteAccessory:deleteAccessory,
-    updateMQTT:updateMQTT
+    updateMQTT:updateMQTT,
+    ConfigPath:ConfigPath,
+    HomeKitPath:HomeKitPath,
+    CheckNewEV:CheckNewEV
 }
