@@ -128,7 +128,9 @@ library, without it, projects like this one are not possible.
     Relocated HKDS and HomeKit configuration (config now survives updates)  
     Make a copy of your **config.json** file and any files inside the **HomeKit** dir, then...  
     **config.json** should be moved to  **%Home%/HomeKitDeviceStack**  
-    **HomeKit/*.json** should be moved to **%Home%/HomeKitDeviceStack/HomeKitPersist**
+    **HomeKit/*.json** should be moved to **%Home%/HomeKitDeviceStack/HomeKitPersist**  
+
+    The **directory** for File routes should now only contain a name of a folder that is releative  to **%Home%/HomeKitDeviceStack/**
     
 
   - **1.1.3**  
