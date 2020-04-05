@@ -129,7 +129,7 @@ library, without it, projects like this one are not possible.
     **config.json** should be moved to  **%Home%/HomeKitDeviceStack**  
     **HomeKit/*.json** should be moved to **%Home%/HomeKitDeviceStack/HomeKitPersist**  
 
-    The **directory** for File routes should now only contain a name of a folder that is releative  to **%Home%/HomeKitDeviceStack/**
+    The **directory** value for File routes should now only contain a name of a folder that is relative  to **%Home%/HomeKitDeviceStack/**
     
 
   - **1.1.3**  
