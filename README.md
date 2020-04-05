@@ -118,7 +118,12 @@ If creating an auto start script - ensure the script is set to run under the ins
 HomeKit Device Stack is based on the awesome [HAP-NodeJS](https://github.com/KhaosT/HAP-NodeJS)
 library, without it, projects like this one are not possible.
 
-## Version History
+## Version History  
+**WARNING!**  
+Ensure to backup the **config.json** file before updating, as it will get overwritten. You can replace it after the update.  
+
+  - **1.1.3**  
+    Update Read Me 
   - **1.1.2**  
     Improved layout for acessories UI.  
     Outgoing route performance improvements  
