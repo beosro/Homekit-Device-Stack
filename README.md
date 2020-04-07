@@ -119,6 +119,8 @@ HomeKit Device Stack is based on the awesome [HAP-NodeJS](https://github.com/Kha
 library, without it, projects like this one are not possible.
 
 ## Version History  
+  - **2.0.1**  
+    Fixed inability to hide TV inputs from view.
   - **2.0.0**  
     **BREAKING CHANGES!**  
 
