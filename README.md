@@ -120,7 +120,9 @@ library, without it, projects like this one are not possible.
 
 ## Version History  
   - **2.0.1**  
-    Fixed inability to hide TV inputs from view.
+    Fixed inability to hide TV inputs from view.  
+    Fixed security issue allowing access without loging in.  
+    Added Route type icon to accessory panel  
   - **2.0.0**  
     **BREAKING CHANGES!**  
 
