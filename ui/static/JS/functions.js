@@ -60,23 +60,6 @@ function SaveMQTT()
     Socket.send(JSON.stringify(Req));
 }
 
-function GetProperties(id)
-{
-    const URI = '/accessories/' + id;
-
-    $.getJSON(URI, function (PL)
-    {
-        const Characteristics = Object.keys(PL.characteristics);
-        for (let i = 0; i < Characteristics.length; i++)
-        {
-
-        }
-
-    });
-
-
-}
-
 function ShowAvailableAccessories()
 {
     document.getElementById("AddAccessory").style.width = "380px";

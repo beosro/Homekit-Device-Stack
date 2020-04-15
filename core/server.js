@@ -11,9 +11,11 @@ const config = require(util.ConfigPath);
 
 
 
-const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSetup) {
+const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSetup)
+{
 
-    const _Clients = [];
+    const _Clients = {};
+    
     let _Paired = false;
     const _Accessories = Accesories
     const _ChangeEvent = ChangeEvent;
@@ -58,102 +60,217 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
     
         // Comms Socket
         const WS = new websocket.Server({ port: config.wsCommPort });
+
+        function heartbeat()
+        {
+            this.isAlive = true;
+        }
     
         // Once a WS is connected - send them the Login page
-        WS.on('connection', function (connection) {
-            _Clients.push(connection);
-            _RenderStaticUI(connection, Templates.Login);
-            connection.on('message', (m) => _processClientMessage(m, connection));
+        WS.on('connection', function (client,req)
+        {
+            const Address = req.connection.remoteAddress
+
+            _Clients[Address] = {};
+            
+            _Clients[Address].connection = client;
+            _Clients[Address].connection.isAlive = true;
+            _Clients[Address].connection.on('pong',heartbeat)
+            _sendLogin(Address)
+            _Clients[Address].connection.on('message', (m) => _processClientMessage(m, Address));
         });
     
+        setInterval(function()
+        {
+            const ClientKeys = Object.keys(_Clients)
+
+            for (let i = 0; i < ClientKeys.length; i++)
+            {
+                if(_Clients[ClientKeys[i]].connection.isAlive == false)
+                {
+                    _Clients[ClientKeys[i]].connection.terminate();
+                    delete _Clients[ClientKeys[i]];
+                }
+                else
+                {
+                    _Clients[ClientKeys[i]].connection.isAlive = false;
+                    _Clients[ClientKeys[i]].connection.ping(null);
+
+                }
+            }
+
+
+        },15000)
        
     
         CB();
     }
 
-    
+    function _sendLogin(client)
+    {
+        const TPL = fs.readFileSync(Templates.Login, 'utf8');
+        const HTML = mustache.render(TPL);
+
+        const PL = {
+            "type": "page",
+            "content": HTML
+        }
+        _Clients[client].connection.send(JSON.stringify(PL))
+        
+    }
 
 
 
     // Send Index Page (Starts the WS connection in doing so)
-    function _sendIndex(req, res) {
+    function _sendIndex(req, res)
+    {
         const TPL = fs.readFileSync(Templates.Index, 'utf8');
         const HTML = mustache.render(TPL, { "Config": config });
 
         res.send(HTML)
     }
 
-    function _processClientMessage(message, connection) {
+    function _processClientMessage(message, client)
+    {
+       
+
         const Req = JSON.parse(message)
 
-        switch (Req.type) {
+        switch (Req.type)
+        {
             case "mqtt":
-                _RenderStaticUI(connection, Templates.MQTT)
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _RenderStaticUI(client, Templates.MQTT)
 
                 break;
             case "main":
-                _RenderStaticUI(connection, Templates.Main)
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _RenderStaticUI(client, Templates.Main)
                 break;
 
             case "routes":
-                _RenderStaticUI(connection, Templates.Routes);
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _RenderStaticUI(client, Templates.Routes);
                 break;
 
             case "login":
-                _login(Req, connection);
+                _login(Req, client);
                 break;
 
             case "add":
-                _showAdd(Req, connection)
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _showAdd(Req, client)
                 break;
 
             case "edit":
-                _showEdit(Req, connection)
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _showEdit(Req, client)
                 break;
 
             case "createAccessory":
-                _createAccessory(Req.config, connection)
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _createAccessory(Req.config, client)
                 break;
 
             case "editAccessory":
-                _editAccessory(Req.config, Req.username, connection)
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _editAccessory(Req.config, Req.username, client)
                 break;
 
             case "saveRoutes":
-                _saveRoutes(Req.routeConfig, connection);
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _saveRoutes(Req.routeConfig, client);
                 break;
 
             case "deleteaccessory":
-                _deleteAccessory(Req.accessory, connection);
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _deleteAccessory(Req.accessory, client);
                 break;
 
             case "savemqtt":
-                _saveMQTT(Req.MQTTConfig,connection);
+                if(!_Clients[client].hasOwnProperty("Authed"))
+                {
+                   _sendLogin(client);
+                   return;
+                }
+
+                _saveMQTT(Req.MQTTConfig,client);
                 break;
 
 
         }
     }
 
-    function _RenderStaticUI(connection, template) {
+    function _RenderStaticUI(client, template)
+    {
         const TypeArray = [];
         const Keys = Object.keys(Accessory.Types);
-        for (let i = 0; i < Keys.length; i++) {
+        for (let i = 0; i < Keys.length; i++)
+        {
             TypeArray.push({ "Key": Keys[i], "Value": Accessory.Types[Keys[i]] })
         }
 
+       
+
         const TPL = fs.readFileSync(template, 'utf8');
-        const HTML = mustache.render(TPL, { "TemplateLookup": JSON.stringify(Accessory.Types), "AvailableTypes": TypeArray, "Config": config, "Routes": JSON.stringify(config.routes, null, 2) });
+        const HTML = mustache.render(TPL, { "TemplateLookup": JSON.stringify(Accessory.Types,null, 2), "AvailableTypes": TypeArray, "Config": config, "Routes": JSON.stringify(config.routes, null, 2) });
 
         const PL = {
             "type": "page",
             "content": HTML
         }
 
-        connection.send(JSON.stringify(PL));
+        _Clients[client].connection.send(JSON.stringify(PL))
+
+        
     }
 
-    function _saveMQTT(Config,connection)
+    function _saveMQTT(Config,client)
     {
 
         config.enableIncomingMQTT = Config.enableIncomingMQTT;
@@ -170,10 +287,12 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
 
 
         util.updateMQTT(Config);
-        _RenderStaticUI(connection, Templates.Main)
+        _RenderStaticUI(client, Templates.Main)
+
     }
 
-    function _deleteAccessory(accessoryId, connection) {
+    function _deleteAccessory(accessoryId, client)
+    {
         //removeAccessory
         const Acs = _Bridge.getAccessories();
         const TargetBAcs = Acs.filter(a => a.username == accessoryId)[0];
@@ -187,20 +306,22 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
         const NA = config.accessories.filter(a => a.username != accessoryId)
         config.accessories = NA;
 
-        _RenderStaticUI(connection, Templates.Main)
+        _RenderStaticUI(client, Templates.Main)
 
     }
 
 
-    function _saveRoutes(Config, connection) {
+    function _saveRoutes(Config, client)
+    {
         config.routes = Config;
         util.updateRouteConfig(Config);
         _RouteSetup();
-        _RenderStaticUI(connection, Templates.Main)
+        _RenderStaticUI(client, Templates.Main)
 
     }
 
-    function _createAccessory(AccessoryOBJ, connection) {
+    function _createAccessory(AccessoryOBJ, client)
+    {
         AccessoryOBJ["pincode"] = util.getRndInteger(100, 999) + "-" + util.getRndInteger(10, 99) + "-" + util.getRndInteger(100, 999);
         AccessoryOBJ["username"] = util.genMAC();
         AccessoryOBJ["setupID"] = util.makeID(4);
@@ -213,7 +334,8 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
 
         config.accessories.push(AccessoryOBJ)
 
-        switch (AccessoryOBJ.type) {
+        switch (AccessoryOBJ.type)
+        {
 
             default:
                 let Acc = new Accessory.Types[AccessoryOBJ.type].Object(AccessoryOBJ);
@@ -225,10 +347,11 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
         }
 
 
-        _RenderStaticUI(connection, Templates.Main)
+        _RenderStaticUI(client, Templates.Main)
     }
 
-    function _editAccessory(AccessoryOBJ, username, connection) {
+    function _editAccessory(AccessoryOBJ, username, client)
+    {
 
 
 
@@ -265,43 +388,54 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
 
 
 
-        _RenderStaticUI(connection, Templates.Main)
+        _RenderStaticUI(client, Templates.Main)
     }
 
-    function _login(Req, connection) {
+    function _login(Req, client)
+    {
         const UN = Req.username;
         const PW = crypto.createHash('md5').update(Req.password).digest("hex");
 
-        if (UN == config.loginUsername && PW == config.loginPassword) {
-            var TPL;
-            if (_Paired) {
-                _RenderStaticUI(connection, Templates.Main)
-            }
-            else {
+        if (UN == config.loginUsername && PW == config.loginPassword)
+        {
+            _Clients[client].Authed = true;
 
-                _RenderStaticUI(connection, Templates.Setup)
+            var TPL;
+            if (_Paired)
+            {
+                _RenderStaticUI(client, Templates.Main)
+            }
+            else
+            {
+
+                _RenderStaticUI(client, Templates.Setup)
             }
         }
-        else {
+        else
+        {
             const PL = {
                 "type": "message",
                 "content": "Sorry, those detail were incorrect. "
             }
 
-            connection.send(JSON.stringify(PL));
+            _Clients[client].connection.send(JSON.stringify(PL))
+            
         }
     }
 
-    function _processAccessoriesGet(req, res) {
+    function _processAccessoriesGet(req, res)
+    {
         const PW = crypto.createHash('md5').update(req.params.pwd).digest("hex");
-        if (PW != config.loginPassword) {
+        if (PW != config.loginPassword)
+        {
             res.sendStatus(401);
             return;
         }
 
         const TPL = [];
         const Names = Object.keys(_Accessories);
-        for (let i = 0; i < Names.length; i++) {
+        for (let i = 0; i < Names.length; i++)
+        {
             const PL = {
                 "id": Names[i],
                 "name": _Accessories[Names[i]].getAccessory().displayName,
@@ -314,9 +448,11 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
         res.send(JSON.stringify(TPL));
     }
 
-    function _processAccessoryGet(req, res) {
+    function _processAccessoryGet(req, res)
+    {
         const PW = crypto.createHash('md5').update(req.params.pwd).digest("hex");
-        if (PW != config.loginPassword) {
+        if (PW != config.loginPassword)
+        {
             res.sendStatus(401);
             return;
         }
@@ -332,9 +468,11 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
         res.send(JSON.stringify(PL));
     }
 
-    function _processAccessorySet(req, res) {
+    function _processAccessorySet(req, res)
+    {
         const PW = crypto.createHash('md5').update(req.params.pwd).digest("hex");
-        if (PW != config.loginPassword) {
+        if (PW != config.loginPassword)
+        {
             res.sendStatus(401);
             return;
         }
@@ -349,7 +487,8 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
 
 
 
-    function _showEdit(Req, connection) {
+    function _showEdit(Req, client)
+    {
         const Template = Req.template;
         const RouteNames = Object.keys(config.routes)
 
@@ -372,11 +511,12 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
             "type": "page",
             "content": HTML
         }
-        connection.send(JSON.stringify(PL));
+        _Clients[client].connection.send(JSON.stringify(PL));
     }
 
 
-    function _showAdd(Req, connection) {
+    function _showAdd(Req, client)
+    {
         const Template = Req.template;
         const RouteNames = Object.keys(config.routes)
 
@@ -396,35 +536,55 @@ const Server = function (Accesories, ChangeEvent, IdentifyEvent, Bridge, RouteSe
             "type": "page",
             "content": HTML
         }
-        connection.send(JSON.stringify(PL));
+        
+        _Clients[client].connection.send(JSON.stringify(PL));
     }
 
 
 
-    this.setBridgePaired = function (IsPaired) {
+    this.setBridgePaired = function (IsPaired)
+    {
         _Paired = IsPaired;
+        const ClientKeys = Object.keys(_Clients)
 
-
-        if (_Paired) {
-            for (let i = 0; i < _Clients.length; i++) {
-                _RenderStaticUI(_Clients[i], Templates.Main)
-
+        if (_Paired)
+        {
+            for (let i = 0; i < ClientKeys.length; i++)
+            {
+                if(_Clients[ClientKeys[i]].hasOwnProperty("Authed"))
+                {
+                    _RenderStaticUI(ClientKeys[i], Templates.Main)
+                }
+                else
+                {
+                    _sendLogin(ClientKeys[i])
+                }
             }
         }
-        else {
-            for (let i = 0; i < _Clients.length; i++) {
-
-                _RenderStaticUI(_Clients[i], Templates.Setup)
-
+        else
+        {
+            for (let i = 0; i < ClientKeys.length; i++)
+            {
+                if(_Clients[ClientKeys[i]].hasOwnProperty("Authed"))
+                {
+                    _RenderStaticUI(ClientKeys[i], Templates.Setup)
+                }
+                else
+                {
+                    _sendLogin(ClientKeys[i])
+                }
             }
+
         }
 
 
     }
 
-    this.push = function (payload) {
+    this.push = function (payload)
+    {
 
-        for (let i = 0; i < _Clients.length; i++) {
+        for (let i = 0; i < _Clients.length; i++)
+        {
             _Clients[i].send(JSON.stringify(payload))
         }
     }

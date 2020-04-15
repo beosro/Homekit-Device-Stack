@@ -8,6 +8,7 @@
 
 <script>
     var templateLookup = {{{TemplateLookup}}};
+    var routeLookup = {{{Routes}}};
 
 </script>
 
@@ -16,21 +17,31 @@
     <table style="color: rgb(255,255,255);">
         <tbody>
             <tr>
-                <td style="padding-right:5px" valign="top">
-                    <img class="invert" src="static/Images/device_icons/{{type}}.png" />
+                <td style="padding-right:5px;text-align:center" valign="top">
+                    <img style="width:38px" class="invert" src="static/Images/device_icons/{{type}}.png" /><br />
+                    
                 </td>
                 <td valign="top" style="text-align:left;width:95%">
                     
                     <div style="font-weight:bold;font-size:24px">{{name}}</div>
+
+                    
+                    
                     
                     <div style="font-size:14px">{{description}}</div><br />
-                    <div style="font-size:14px">Device ID : {{accessoryID}}, API Address : <a target="_blank"  href="/password/accessories/{{accessoryID}}">accessories/{{accessoryID}}</a></div>
+                    <div style="font-size:14px">Device ID : {{accessoryID}}<br />Serial ID : {{serialNumber}}<br />Outgoing Route : {{route}}<br />API : <a target="_blank"  href="/password/accessories/{{accessoryID}}">accessories/{{accessoryID}}</a></div>
                 
 
                     
                    
                 </td>
-                <td valign="top"><div onclick="edit('{{type}}','{{username}}')" style="text-align: center;cursor: pointer;margin-bottom: 5px;">[Configure]</div><div onclick="delete_accessory('{{username}}')" style="text-align: center;cursor: pointer;margin-bottom: 5px;">[Delete]</div></td>
+                <td valign="top"><div onclick="edit('{{type}}','{{username}}')" style="text-align: center;cursor: pointer;margin-bottom: 5px;">[Configure]</div><div onclick="delete_accessory('{{username}}')" style="text-align: center;cursor: pointer;margin-bottom: 5px;">[Delete]</div>
+                    
+                    <div style="text-align: center;">
+                        <img style="width:38px;margin-top: 70px;" class="invert" id="RouteIMG_{{accessoryID}}" src="" />
+                    </div>
+                    
+                </td>
             </tr>
 
         </tbody>
@@ -39,7 +50,9 @@
 
 
 </div>
-<script>GetProperties('{{accessoryID}}');</script>
+<script>
+    document.getElementById('RouteIMG_{{accessoryID}}').src = 'static/Images/route_icons/'+routeLookup['{{route}}'].type+'.png'
+</script>
 {{/Config.accessories}}
 
 

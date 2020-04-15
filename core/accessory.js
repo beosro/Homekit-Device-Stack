@@ -424,6 +424,14 @@ class TV extends AccessoryCLS
             Input.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.HDMI)
             Input.setCharacteristic(Characteristic.CurrentVisibilityState, 0);
             Input.setCharacteristic(Characteristic.TargetVisibilityState, 0);
+
+            Input.getCharacteristic(Characteristic.TargetVisibilityState)
+            .on(CharacteristicEventTypes.SET,function(value,callback,hap)
+            {
+                Input.setCharacteristic(Characteristic.CurrentVisibilityState, value);
+                callback(null);
+            })
+
             this._accessory.addService(Input);
             this._service.addLinkedService(Input);
 
