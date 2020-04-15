@@ -123,7 +123,7 @@ library, without it, projects like this one are not possible.
     Fixed inability to hide TV inputs from view.  
     Fixed security issue allowing access without logging in.  
     Fixed potential ffmpeg process freeze.  
-    Fixed disconnected web client exception.
+    Fixed disconnected web client exception.  
     Added Route type icon to accessory panel  
   - **2.0.0**  
     **BREAKING CHANGES!**  
