@@ -315,7 +315,7 @@ Camera.prototype.handleStreamRequest = function(request)
 
                    
 
-                    const ffmpeg = spawn(this.config.processor, CMD.join(' ').split(' '), { env: process.env, })
+                    const ffmpeg = spawn(this.config.processor, CMD.join(' ').split(' '), { env: process.env,stdio: 'ignore'  })
 
                   
 

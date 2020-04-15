@@ -336,6 +336,7 @@ const Reset = function ()
    
 
     console.log(' Wiping HomeKit cache.')
+    
     _deleteFolderRecursive(HomeKitPath)
 
 }
